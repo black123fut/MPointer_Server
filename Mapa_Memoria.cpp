@@ -15,6 +15,8 @@ Mapa_Memoria<T>::Mapa_Memoria(int size_heap) {
     heap = (MPointer<int>*) malloc(size_heap);
     cout<<"heap:"<<endl;
     cout<<heap<< "\n" << "------------------------------------" <<endl;
+
+    cout << "ID" << "       " << "Valor" << "       " << "Direccion" << endl;
 }
 
 template <typename T>
@@ -58,6 +60,25 @@ MPointer<T>* Mapa_Memoria<T>::buscar_Mpointer(int ID) {
             return lista_memoria->get(i);
         }
     }
-};
+}
+
+template <typename T>
+void Mapa_Memoria<T>::remover_MPointer(int ID){
+    for (int i = 0; i < lista_memoria->length(); i++) {
+        if(lista_memoria->get(i)->getID()==ID){
+            lista_memoria->remove(i);
+        }
+    }
+}
+
+template <typename T>
+bool Mapa_Memoria<T>::estaEnLista(int id){
+    for (int i = 0; i < lista_memoria->length(); i++) {
+        if (lista_memoria->get(i)->getID() == id){
+            return true;
+        }
+    }
+    return false;
+}
 
 template class Mapa_Memoria<int>;

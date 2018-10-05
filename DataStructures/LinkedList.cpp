@@ -88,7 +88,6 @@ public:
 
             for (int i = 0; i < size; ++i) {
                 if (i == index){
-                    cout << "Eliminado de la lista" << endl;
                     tmp2->setNext(tmp->getNext());
                     free (tmp);
                     size--;

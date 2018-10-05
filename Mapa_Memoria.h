@@ -24,8 +24,8 @@ public:
     void asignar_dato(int ID,int dato);//asignar dato a un MPointer en el heap
     T obtener_dato(int ID);//obtener el dato de un MPointer almacenado en el heap
     MPointer<T>* buscar_Mpointer(int ID);//Buscar un MPointer en el heap
-
-
+    void remover_MPointer(int);
+    bool estaEnLista(int);
 };
 
 #endif //MPOINTER_SERVER_MAPA_MEMORIA_H

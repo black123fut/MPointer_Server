@@ -22,7 +22,7 @@ MPointer<T>::MPointer() {
 
 template<class T>
 MPointer<T>::~MPointer() {
-    delete data;
+//    delete data;
     pointerGC->setIDPointer(id, -1);
     cout << "Eliminado" << endl;
 }

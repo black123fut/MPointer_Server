@@ -20,7 +20,7 @@ using namespace rapidjson;
 Server::Server(int reserved_memory) {
     size_heap = reserved_memory;
     contador_direcciones = 0;
-    IDs = 0;
+    IDs = 100;
 }
 
 void Server::run() {
@@ -57,19 +57,25 @@ void Server::run() {
     }
 
     while (true) {
-        valread = read(new_socket, buffer, 1024);
 
-        if (valread == 0 || valread == -1) {
+        valread = read(new_socket, buffer, 1024);
+        bool poo = true;
+
+        if (valread <= 0) {
             perror("Error server quitting");
             break;
         }
-        else{
+        else {
             // Lee el mensaje del cliente.
 
+            string recieved = string(buffer, buffer + valread);
+            strcpy(buffer, recieved.c_str());
+
             rapidjson::Document doc;
+
             doc.Parse(buffer);
 
-            Value& val = doc["opcode"];
+            rapidjson::Value& val = doc["opcode"];
 
             if (strcmp(val.GetString(), "00") == 0) {
                 contador_direcciones += memory.reservar_memoria(IDs, contador_direcciones);
@@ -87,6 +93,10 @@ void Server::run() {
                 rapidjson::StringBuffer sbuffer;
                 rapidjson::Writer<StringBuffer> writer(sbuffer);
                 response.Accept(writer);
+
+
+                cout << memory.buscar_Mpointer(IDs)->getID() << "      " << memory.buscar_Mpointer(IDs)->get_dato() <<
+                "         " << memory.buscar_Mpointer(IDs);
 
                 send(new_socket, sbuffer.GetString(), strlen(sbuffer.GetString()), 0);
                 IDs += 1;
@@ -108,10 +118,44 @@ void Server::run() {
                 rapidjson::Writer<StringBuffer> writer(sbuffer);
                 response.Accept(writer);
 
+                cout << memory.buscar_Mpointer(clientID.GetInt())->getID() << "      " << memory.buscar_Mpointer(clientID.GetInt())->get_dato() <<
+                "         " << memory.buscar_Mpointer(clientID.GetInt());
+
                 send(new_socket, sbuffer.GetString(), strlen(sbuffer.GetString()), 0);
             }
 
-            printf("Mensaje: %s\n", buffer);
+            else if (strcmp(val.GetString(), "04") == 0) {
+                rapidjson::Value& clientID = doc["serverID"];
+
+                poo = memory.estaEnLista(clientID.GetInt());
+                if (memory.estaEnLista(clientID.GetInt())){
+                    cout << memory.buscar_Mpointer(clientID.GetInt())->getID() << "      " << memory.buscar_Mpointer(clientID.GetInt())->get_dato() <<
+                         "         " << memory.buscar_Mpointer(clientID.GetInt());
+
+                    memory.remover_MPointer(clientID.GetInt());
+                }
+
+
+                Document response;
+
+                response.SetObject();
+                rapidjson::Document::AllocatorType& allocator = response.GetAllocator();
+
+                response.AddMember("opcode", "03", allocator);
+                int tab = 0;
+                if (!poo)
+                    tab = 1;
+                response.AddMember("message", tab, allocator);
+
+                rapidjson::StringBuffer sbuffer;
+                rapidjson::Writer<StringBuffer> writer(sbuffer);
+                response.Accept(writer);
+
+                send(new_socket, sbuffer.GetString(), strlen(sbuffer.GetString()), 0);
+            }
+            if (poo)
+                printf("               Mensaje: %s\n", buffer);
+
         }
     }
 

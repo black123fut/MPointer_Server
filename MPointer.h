@@ -26,9 +26,6 @@ public:
     void setID(int);
     T * getData() const;
     void setData(T *);
-    int getServerID();
-    void setServerID(int);
-    bool isOn();
 
     T &(operator *());
     T operator &();
